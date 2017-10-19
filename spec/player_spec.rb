@@ -1,12 +1,10 @@
 require 'player'
 
-TEST_FILE_PATH = '/Users/tim/Desktop/dnd_gui/test_files/test.yaml'
-
 describe Player do
   ## Tests player stats
   describe 'player' do
     ## Create test character
-    test_player = Player.new("John Smith", 50, TEST_FILE_PATH)
+    test_player = Player.new("John Smith", 50, TEST_SAVE_DIR_PATH)
     test_player.health.current_health = 32
     test_player.save
 
@@ -46,7 +44,7 @@ describe Player do
       end
     end
     describe 'I/O Tests' do
-      test_load = Player.load(TEST_FILE_PATH)
+      test_load = Player.load(TEST_SAVE_DIR_PATH, "John Smith")
       it 'returns loaded Player class' do
         expect(test_load.class).to eql(Player)
       end

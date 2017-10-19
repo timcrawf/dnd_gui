@@ -24,11 +24,11 @@ class Player
   end
 
   def save
-    @yaml.save_yaml(to_yaml)
+    @yaml.save_yaml(@name, to_yaml)
   end
 
-  def self.load(path)
-    loaded_hash = HandleYaml.new(path).load_yaml
+  def self.load(path, player_name)
+    loaded_hash = HandleYaml.new(path).load_player(player_name)
     Player.new(
       loaded_hash[:name],
       loaded_hash[:max_health],
