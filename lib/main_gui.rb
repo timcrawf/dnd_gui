@@ -16,22 +16,42 @@ class DNDCharacterStats < Shoes
       all_players = HandleYaml.new(MAIN_SAVE_LOCATION).all_players
       loaded_player = list_box items: all_players
       loaded_player.choose(all_players[0])
+    flow do
       button 'Load Player' do
-        # @@loaded_player = loaded_player.text
-        # puts @@loaded_player
-        visit "/load_player/#{loaded_player.text.sub!(' ', '_')}"
+         player = loaded_player.text
+         player.sub!(' ', '_') if player.include?(' ')
+        visit "/load_player/#{player}"
       end
       button 'New Player' do
         visit '/new_player'
       end
     end
+      # button 'ANOTHER!' do
+      #   window do
+      #     DNDCharacterStats.new
+      #   end
+      # end
+    end
   end
 
   def load_player(loaded_player)
-    player = Player.load(MAIN_SAVE_LOCATION, loaded_player.sub!('_', ' '))
+    loaded_player.sub!('_', ' ') if loaded_player.include?('_')
+    player = Player.load(MAIN_SAVE_LOCATION, loaded_player)
     stack do
       caption player.name.to_s
-      caption player.health.max_health
+      current_health = caption player.health.current_health
+      current_health.click do
+        window width: 300, height: 100 do
+          caption "Enter Change to Health"
+          health_change = edit_line width: 25
+          button "Submit" do
+            player.health.add(health_change.text.to_i)
+            player.save
+            current_health.text = player.health.current_health
+            close
+          end
+        end
+      end
       button 'Back' do
         visit '/'
       end
@@ -53,8 +73,6 @@ class DNDCharacterStats < Shoes
           visit '/'
         end
         button 'Submit' do
-          puts @player_name.text
-          puts @player_max_health.text
           test_player = Player.new(
             @player_name.text,
             @player_max_health.text,
@@ -68,4 +86,4 @@ class DNDCharacterStats < Shoes
   end
 end
 
-Shoes.app width: 400, height: 300
+Shoes.app width: 225, height: 100
